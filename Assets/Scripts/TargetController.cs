@@ -5,26 +5,15 @@ using UnityEngine;
 public class TargetController : MonoBehaviour
 {
 
-    public static TargetController instance;
+    public static TargetController instance;   // -- Referência para a própria instância 
 
     private void Awake()
     {
+        // -- Cria uma instância 
         if (!instance)
         {
             instance = this;
         }
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 
     /*
@@ -41,6 +30,9 @@ public class TargetController : MonoBehaviour
         MoveTarget();
     }
 
+    /*
+        Este método faz com que o target se mova para distâncias randômicas dentro de um vector3
+    */
     public void MoveTarget()
     {
         Vector3 temp;

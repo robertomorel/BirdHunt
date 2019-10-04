@@ -17,12 +17,6 @@ public class MenuManager : MonoBehaviour
         StartCoroutine(IntroJingle());
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     private void PlaySound(int sound)
     {
         audioSource.clip = clips[sound];
