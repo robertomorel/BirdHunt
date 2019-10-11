@@ -8,20 +8,14 @@ public class RaycastController : MonoBehaviour
 
     public float maxDistanceRay = 100.0f;         // -- Distância máxima que a arma pode acertar um alvo   
     public static RaycastController instance;     // -- Referência para a instância ao próprio objeto
-    public Text birdName;                         // -- Nome do bird
-    public Transform gunFlashTarget;              // -- Referência ao local onde o flash da arma será ativado 
     public float fireRate = 1.6f;                 // -- Tempo de espera até o próximo tiro
     private bool nextShot = true;                 // -- Bool que verifica que o player já pode atirar
-    private string objName = "";                  // -- Nome do objeto acertado (para testes)
 
     AudioSource audioSource;                      // -- Referência ao componente de audio do Raycast
     public AudioClip[] clips;                     // -- Array de clips de audio
 
     [SerializeField]
     private GameObject _bird;                     // -- Referência ao GO do bird
-
-    [SerializeField]
-    private GameObject _gunFlash;                 // -- Referência ao flash da arma será ativado
 
     [SerializeField]
     private GameObject _explosion;                // -- Referência ao GO da explosão do bird
@@ -83,33 +77,18 @@ public class RaycastController : MonoBehaviour
 
         // -- Posição inicial randomica
         Vector3 temp;
-        temp.x = Random.Range(3.4f, 6.5f);
-        temp.y = Random.Range(0.4f, 1.4f);
-        temp.z = Random.Range(2.7f, 7.7f);
+        temp.x = Random.Range(-0.163f, 0.198f);
+        temp.y = Random.Range(0.128f, 0.441f);
+        temp.z = Random.Range(-0.18f, 0.178f);
         newBird.transform.position = temp;
 
-    }
-
-    private IEnumerator ClearExplosion()
-    {
-        // -- Aguarda 1,5s antes de iniciar o método
-        yield return new WaitForSeconds(1.5f);
-
-        // -- Toma referências ao GO com a tag "Boom"    
-        GameObject[] smokeGroup = GameObject.FindGameObjectsWithTag("Boom");
-        // -- Varre todos os elementos encontrados...
-        foreach (GameObject smoke in smokeGroup)
-        {
-            // -- Destroi elementos
-            Destroy(smoke.gameObject);
-        }
     }
 
     private IEnumerator TakeShot()
     {
 
         // -- toca som do tiro
-        GunController.instance.FireSound();
+        GunController.instance.Shot();
 
         // -- Cria um ray 
         Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
@@ -117,7 +96,7 @@ public class RaycastController : MonoBehaviour
         RaycastHit hit;
 
         // -- Diminui quantidade de tiros permitidos por round
-        GameManager.instance.shotsPerRound--;
+        //GameManager.instance.shotsPerRound--;
 
         // -- Utiliza máscara para todos os elementos que estiverem no layer "Bird"
         int layerMask = LayerMask.GetMask("Bird");
@@ -128,12 +107,6 @@ public class RaycastController : MonoBehaviour
 
             // -- Toma objeto atingido
             GameObject objHitted = hit.collider.gameObject;
-
-            // -- Setta nome do objeto atingido 
-            string objName = objHitted.name;
-
-            // -- Setta nome do bird
-            birdName.text = objName;
 
             // -- Toma posição do objeto atingido
             Vector3 birdPosition = objHitted.transform.position;
@@ -153,31 +126,13 @@ public class RaycastController : MonoBehaviour
                 // -- Inicia corrotina para criação de novo pássaro     
                 StartCoroutine(SpawNewBird());
 
-                // -- Inicia corrotina que destruirá todas as explosões            
-                StartCoroutine(ClearExplosion());
-
-                // -- Reinicia os tiros por round    
-                GameManager.instance.shotsPerRound = 3;
-                // -- Incrementa score
-                GameManager.instance.playerScore++;
-                // -- Incrementa o round
-                GameManager.instance.roundScore++;
             }
 
         }
 
-        GameObject gunFlash = Instantiate(_gunFlash);
-        gunFlash.transform.position = gunFlashTarget.position;
-
         yield return new WaitForSeconds(fireRate);
 
         nextShot = true;
-
-        GameObject[] gunSmokeGroup = GameObject.FindGameObjectsWithTag("GunSmoke");
-        foreach (GameObject gunSmoke in gunSmokeGroup)
-        {
-            Destroy(gunSmoke.gameObject);
-        }
 
     }
 

@@ -35,15 +35,16 @@ public class TargetController : MonoBehaviour
     */
     public void MoveTarget()
     {
+        /*
+        Limites da área de voo
+            X[-0.163, 0.198]
+            Y[0.128, 0.441]
+            Z[-0.18, 0.178]
+        */
         Vector3 temp;
-        temp.x = Random.Range(3.4f, 6.5f);
-        temp.y = Random.Range(0.4f, 1.4f);
-        temp.z = Random.Range(2.7f, 7.7f);
+        temp.x = Random.Range(-0.163f, 0.198f);
+        temp.y = Random.Range(0.128f, 0.441f);
+        temp.z = Random.Range(-0.18f, 0.178f);
         transform.position = temp;
-        //if (DefaultTrackableEventHandler.trueFalse)
-        //{
-        //    RaycastController.instance.PlaySound(0);
-        //}
-
     }
 }
