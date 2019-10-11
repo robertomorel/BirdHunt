@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class MenuManager : MonoBehaviour
@@ -9,12 +10,14 @@ public class MenuManager : MonoBehaviour
     AudioSource audioSource;
 
     public AudioClip[] clips;
+    public Text dataPlayer;
 
     // Start is called before the first frame update
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
         StartCoroutine(IntroJingle());
+        dataPlayer.text = LobbyManager.instance.player.toString();
     }
 
     private void PlaySound(int sound)
