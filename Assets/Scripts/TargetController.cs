@@ -42,9 +42,9 @@ public class TargetController : MonoBehaviour
             Z[-0.18, 0.178]
         */
         Vector3 temp;
-        temp.x = Random.Range(-0.163f, 0.198f);
-        temp.y = Random.Range(0.128f, 0.441f);
-        temp.z = Random.Range(-0.18f, 0.178f);
+        temp.x = Random.Range(3.54f, 6.93f);
+        temp.y = Random.Range(0.804f, 3.783f);
+        temp.z = Random.Range(3.8f, 6.64f);
         transform.position = temp;
     }
 }

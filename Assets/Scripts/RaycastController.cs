@@ -8,8 +8,6 @@ public class RaycastController : MonoBehaviour
 
     public float maxDistanceRay = 100.0f;         // -- Distância máxima que a arma pode acertar um alvo   
     public static RaycastController instance;     // -- Referência para a instância ao próprio objeto
-    public float fireRate = 1.6f;                 // -- Tempo de espera até o próximo tiro
-    private bool nextShot = true;                 // -- Bool que verifica que o player já pode atirar
 
     AudioSource audioSource;                      // -- Referência ao componente de audio do Raycast
     public AudioClip[] clips;                     // -- Array de clips de audio
@@ -19,6 +17,8 @@ public class RaycastController : MonoBehaviour
 
     [SerializeField]
     private GameObject _explosion;                // -- Referência ao GO da explosão do bird
+
+    public GameObject guns;
 
     private void Awake()
     {
@@ -32,8 +32,6 @@ public class RaycastController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // -- Inicia corrotina para criação do pássaro 
-        StartCoroutine(SpawNewBird());
         // -- Instancia componente de audio
         audioSource = GetComponent<AudioSource>();
     }
@@ -49,46 +47,8 @@ public class RaycastController : MonoBehaviour
         audioSource.Play();
     }
 
-    public void Fire()
+    public void TakeShot()
     {
-        // -- Se o player puder atirar...
-        if (nextShot)
-        {
-            // -- Chama corrotina de tiro
-            StartCoroutine(TakeShot());
-            // -- Setta variável que impede tiro seguido
-            nextShot = false;
-        }
-    }
-
-    private IEnumerator SpawNewBird()
-    {
-        // -- Espera 3s antes de executar o método
-        yield return new WaitForSeconds(3.0f);
-
-        // -- Instancia um novo bird
-        GameObject newBird = Instantiate(_bird);
-
-        // -- Faz o bird ser filho do Terrain
-        newBird.transform.parent = GameObject.Find("Terrain").transform;
-
-        // -- Escala novo bird
-        newBird.transform.localScale = new Vector3(10f, 10f, 10f);
-
-        // -- Posição inicial randomica
-        Vector3 temp;
-        temp.x = Random.Range(-0.163f, 0.198f);
-        temp.y = Random.Range(0.128f, 0.441f);
-        temp.z = Random.Range(-0.18f, 0.178f);
-        newBird.transform.position = temp;
-
-    }
-
-    private IEnumerator TakeShot()
-    {
-
-        // -- toca som do tiro
-        GunController.instance.Shot();
 
         // -- Cria um ray 
         Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
@@ -114,25 +74,14 @@ public class RaycastController : MonoBehaviour
             // -- Se o objeto atingido tiver a tag "Bird"...
             if (objHitted.tag == "Bird")
             {
-                // -- Cria uma instância do efeito de fogo
-                GameObject fire = Instantiate(_explosion, birdPosition, Quaternion.identity);
-
                 // -- Toca o som na posição 1    
                 PlaySound(1);
-
-                // -- Destroi o objeto atingido     
-                Destroy(objHitted);
-
-                // -- Inicia corrotina para criação de novo pássaro     
-                StartCoroutine(SpawNewBird());
-
+                objHitted.GetComponent<BirdController>().bird.Hit(10 /*TODO: Temporário...*/);
             }
 
         }
 
-        yield return new WaitForSeconds(fireRate);
-
-        nextShot = true;
+        guns.GetComponent<GunController>().nextShot = true;
 
     }
 
