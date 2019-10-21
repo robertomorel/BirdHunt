@@ -15,13 +15,31 @@ public class UserSerialized
         this.characterName = characterName;
         this.position = position;
         this.listArms = new List<string>();
+
+        this.listArms.Add("Pistol");
     }      
 
     public string toString()
     {
-        return MultiIdiomaManager.instance.GetTexto("MENUHUMANS_NAME") + ":" + characterName + "\n" +               
+        string texto = "";
+
+        texto = MultiIdiomaManager.instance.GetTexto("MENUHUMANS_NAME") + ":" + characterName + "\n" +
                "XP:" + experience + "\n" +
-               "Armas: " + listArms;
+               "Armas: ";
+
+        for (int i = 0; i < listArms.Count; i++)
+        {
+            if( i == (listArms.Count - 1))
+            {
+                texto += listArms[i];
+            }
+            else
+            {
+                texto += listArms[i] + ", ";
+            }            
+        }
+
+        return texto;
     }
 
 }
