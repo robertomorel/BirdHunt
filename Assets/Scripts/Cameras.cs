@@ -54,8 +54,29 @@ public class Cameras : MonoBehaviour
     private float[] xOrbit, yOrbit, distanciaCameraOrbit;
     private bool orbitalAtiv;
     Vector3[] posicOriginalCameraETS;
+
+    private float joystickX = 0.0f;
+    private float joystickY = 0.0f;
+    private bool useJoystickVirtual;
+    public UIDirectionalJoystick joystickVirtual;
+    public bool testJoystickVirtual;
+
     void Awake()
     {
+
+        #if (UNITY_EDITOR || UNITY_STANDALONE || UNITY_WEBGL)
+        this.useJoystickVirtual = false;
+        #elif UNITY_ANDROID
+        this.useJoystickVirtual = true;
+        #endif
+
+        if (this.useJoystickVirtual || this.testJoystickVirtual){
+            this.joystickVirtual.gameObject.SetActive(true);    
+        }
+        else{
+            this.joystickVirtual.gameObject.SetActive(false);
+        }
+
         objetosPosicCamerasParadasRetilineas = new GameObject[cameras.Length];
         rotacaoOriginalCameras = new Quaternion[cameras.Length];
         posicaoOriginalCameras = new GameObject[cameras.Length];
@@ -186,8 +207,8 @@ public class Cameras : MonoBehaviour
                 cameras[indiceCameras]._camera.transform.LookAt(transform.position);
                 break;
             case TipoDeCam.TipoRotac.primeiraPessoa:
-                rotacaoX += Input.GetAxis("Mouse X") * ConfiguracoesCameras.sensibilidade;
-                rotacaoY += Input.GetAxis("Mouse Y") * ConfiguracoesCameras.sensibilidade;
+                rotacaoX += this.joystickX * ConfiguracoesCameras.sensibilidade;
+                rotacaoY += this.joystickY * ConfiguracoesCameras.sensibilidade;
                 rotacaoX = ClampAngle(rotacaoX, -ConfiguracoesCameras.anguloHorizntal, ConfiguracoesCameras.anguloHorizntal);
                 rotacaoY = ClampAngle(rotacaoY, -ConfiguracoesCameras.anguloVertical, ConfiguracoesCameras.anguloVertical);
                 Quaternion xQuaternion = Quaternion.AngleAxis(rotacaoX, Vector3.up);
@@ -230,8 +251,8 @@ public class Cameras : MonoBehaviour
                     distMin = Mathf.Clamp((Vector3.Distance(transform.position, hit2.point)), distMin * 0.5f, distMax);
                 }
                 //
-                xOrbit[indiceCameras] += Input.GetAxis("Mouse X") * (sensibilidade * distanciaCameraOrbit[indiceCameras]) / (distanciaCameraOrbit[indiceCameras] * 0.5f);
-                yOrbit[indiceCameras] -= Input.GetAxis("Mouse Y") * sensibilidade * sensYMouse;
+                xOrbit[indiceCameras] += this.joystickX * (sensibilidade * distanciaCameraOrbit[indiceCameras]) / (distanciaCameraOrbit[indiceCameras] * 0.5f);
+                yOrbit[indiceCameras] -= this.joystickY * sensibilidade * sensYMouse;
                 yOrbit[indiceCameras] = ClampAngle(yOrbit[indiceCameras], 0.0f, 85.0f);
                 Quaternion rotation = Quaternion.Euler(yOrbit[indiceCameras], xOrbit[indiceCameras], 0);
                 distanciaCameraOrbit[indiceCameras] = Mathf.Clamp(distanciaCameraOrbit[indiceCameras] - Input.GetAxis("Mouse ScrollWheel") * velocidadeScrool, distMin, distMax);
@@ -243,8 +264,8 @@ public class Cameras : MonoBehaviour
                 cameras[indiceCameras]._camera.transform.position = Vector3.Lerp(posicAtual, position, Time.deltaTime * 5.0f * velocidadeTimeScale);
                 break;
             case TipoDeCam.TipoRotac.OrbitalQueSegue:
-                float movX = Input.GetAxis("Mouse X");
-                float movY = Input.GetAxis("Mouse Y");
+                float movX = this.joystickX;
+                float movY = this.joystickY;
                 float movZ = Input.GetAxis("Mouse ScrollWheel");
 
                 if (movX > 0.0f || movY > 0.0f || movZ > 0.0f)
@@ -311,8 +332,8 @@ public class Cameras : MonoBehaviour
                 }
                 break;
             case TipoDeCam.TipoRotac.CameraEstiloETS:
-                rotacaoXETS += Input.GetAxis("Mouse X") * ConfiguracoesCameras.sensibilidade;
-                rotacaoYETS += Input.GetAxis("Mouse Y") * ConfiguracoesCameras.sensibilidade;
+                rotacaoXETS += this.joystickX * ConfiguracoesCameras.sensibilidade;
+                rotacaoYETS += this.joystickY * ConfiguracoesCameras.sensibilidade;
                 Vector3 novaPosicao = new Vector3(posicOriginalCameraETS[indiceCameras].x + Mathf.Clamp(rotacaoXETS / 50 + (ConfiguracoesCameras.deslocamentoCameraETS / 3.0f), -ConfiguracoesCameras.deslocamentoCameraETS, 0), posicOriginalCameraETS[indiceCameras].y, posicOriginalCameraETS[indiceCameras].z);
                 cameras[indiceCameras]._camera.transform.localPosition = Vector3.Lerp(cameras[indiceCameras]._camera.transform.localPosition, novaPosicao, Time.deltaTime * 10.0f);
                 rotacaoXETS = ClampAngle(rotacaoXETS, -180, 80);
@@ -350,6 +371,17 @@ public class Cameras : MonoBehaviour
     {
         if (cameras.Length > 0)
         {
+            if (this.useJoystickVirtual || this.testJoystickVirtual)
+            {
+                this.joystickX = this.joystickVirtual.horizontal;
+                this.joystickY = this.joystickVirtual.vertical;
+            }
+            else
+            {
+                this.joystickX = Input.GetAxis("Mouse X");
+                this.joystickY = Input.GetAxis("Mouse Y");
+            }
+
             GerenciarCameras();
         }
     }

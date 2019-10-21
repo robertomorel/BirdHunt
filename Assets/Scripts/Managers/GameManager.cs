@@ -20,6 +20,8 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private GameObject _bird;                     // -- Referência ao GO do bird
 
+    public BoxCollider spawnArea;
+
     private void Awake()
     {
         if (!instance)
@@ -63,9 +65,12 @@ public class GameManager : MonoBehaviour
 
         // -- Posição inicial randomica
         Vector3 temp;
-        temp.x = Random.Range(3.54f, 6.93f);
-        temp.y = Random.Range(0.804f, 3.783f);
-        temp.z = Random.Range(3.8f, 6.64f);
+        temp.x = Random.Range(this.spawnArea.bounds.center.x - this.spawnArea.bounds.extents.x, 
+                                this.spawnArea.bounds.center.x + this.spawnArea.bounds.extents.x);
+        temp.y = Random.Range(this.spawnArea.bounds.center.y - this.spawnArea.bounds.extents.y, 
+                                this.spawnArea.bounds.center.y + this.spawnArea.bounds.extents.y);
+        temp.z = Random.Range(this.spawnArea.bounds.center.z - this.spawnArea.bounds.extents.z, 
+                                this.spawnArea.bounds.center.z + this.spawnArea.bounds.extents.z);
         newBird.transform.position = temp;
 
         SetBirdParams(newBird);

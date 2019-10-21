@@ -5,7 +5,8 @@ using UnityEngine;
 public class TargetController : MonoBehaviour
 {
 
-    public static TargetController instance;   // -- Referência para a própria instância 
+    public static TargetController instance;   // -- Referência para a própria instância
+    public BoxCollider flightArea; 
 
     private void Awake()
     {
@@ -42,9 +43,12 @@ public class TargetController : MonoBehaviour
             Z[-0.18, 0.178]
         */
         Vector3 temp;
-        temp.x = Random.Range(3.54f, 6.93f);
-        temp.y = Random.Range(0.804f, 3.783f);
-        temp.z = Random.Range(3.8f, 6.64f);
+        temp.x = Random.Range(this.flightArea.bounds.center.x - this.flightArea.bounds.extents.x, 
+                                this.flightArea.bounds.center.x + this.flightArea.bounds.extents.x);
+        temp.y = Random.Range(this.flightArea.bounds.center.y - this.flightArea.bounds.extents.y, 
+                                this.flightArea.bounds.center.y + this.flightArea.bounds.extents.y);
+        temp.z = Random.Range(this.flightArea.bounds.center.z - this.flightArea.bounds.extents.z, 
+                                this.flightArea.bounds.center.z + this.flightArea.bounds.extents.z);
         transform.position = temp;
     }
 }

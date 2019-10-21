@@ -54,7 +54,7 @@ public class Bird
         {
             life = 10;
         }
-
+life = 300;
         this.actLife = life;
 
     }
